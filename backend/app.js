@@ -28,7 +28,7 @@ const logger = log4js.getLogger("cloud-directory-app-sample-server");
 const base64url = require("base64url");
 const crypto = require("crypto");
 
-const LANDING_PAGE_URL = "/cloud-directory-app-sample.html";
+const LANDING_PAGE_URL = "/index.html";
 const CALLBACK_URL = "/ibm/bluemix/appid/callback";
 const LOGOUT_URL = "/ibm/bluemix/appid/logout";
 const ROP_LOGIN_PAGE_URL = "/ibm/bluemix/appid/rop/login";
@@ -99,7 +99,7 @@ const tenantId = "TENANT_ID";
 passport.use(new WebAppStrategy({}));
 
 let selfServiceManager = new SelfServiceManager({
-	iamApiKey: "IAM_API_KEY",
+	iamApiKey: "IAM_API_KEY"
 });
 
 // Configure passportjs with user serialization/deserialization. This is required
