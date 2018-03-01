@@ -96,7 +96,7 @@ app.use(bodyParser.json());
 const tenantId = "TENANT_ID";
 
 // Configure passport.js to use WebAppStrategy
-passport.use(new WebAppStrategy({}));
+passport.use(new WebAppStrategy());
 
 let selfServiceManager = new SelfServiceManager({
 	iamApiKey: "IAM_API_KEY"
