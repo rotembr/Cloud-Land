@@ -6,7 +6,7 @@
 		"start": "node app.js"
 	},
 	"dependencies": {
-		"bluemix-appid": "^3.0.0",
+		"bluemix-appid": "^3.0.4",
 		"cfenv": "1.0.x",
 		"express": "4.15.x",
 		"express-session": "^1.15.0",

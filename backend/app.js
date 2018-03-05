@@ -27,7 +27,7 @@ const cfenv = require('cfenv');
 const logger = log4js.getLogger("cloud-directory-app-sample-server");
 const base64url = require("base64url");
 const crypto = require("crypto");
-const credentials = require("/credentials.json");
+const credentials = require("./credentials.json");
 
 const LANDING_PAGE_URL = "/index.html";
 const CALLBACK_URL = "/ibm/cloud/appid/callback";
@@ -101,7 +101,7 @@ let selfServiceManager = new SelfServiceManager({
 	iamApiKey: credentials.iamApiKey
 });
 
-// Configure passportjs with user serialization/deserialization. This is required
+// Configure passport.js with user serialization/deserialization. This is required
 // for authenticated session persistence accross HTTP requests. See passportjs docs
 // for additional information http://passportjs.org/docs
 passport.serializeUser(function(user, cb) {
@@ -351,7 +351,7 @@ app.post(SIGN_UP_SUBMIT, function(req, res) {
 });
 
 app.get(SIGN_UP_PAGE, function(req, res) {
-	_render(req, res, signUpEjs, {firstName:'', lastName:'', email:'', phoneNumber:''}, req.query.language);
+	_render(req, res, signUpEjs, {firstName:'', lastName:'', email:req.query.email, phoneNumber:''}, req.query.language);
 });
 
 app.post(FORGOT_PASSWORD_SUBMIT, function(req, res) {
