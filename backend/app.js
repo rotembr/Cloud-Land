@@ -27,19 +27,20 @@ const cfenv = require('cfenv');
 const logger = log4js.getLogger("cloud-directory-app-sample-server");
 const base64url = require("base64url");
 const crypto = require("crypto");
+const credentials = require("/credentials.json");
 
 const LANDING_PAGE_URL = "/index.html";
-const CALLBACK_URL = "/ibm/bluemix/appid/callback";
-const LOGOUT_URL = "/ibm/bluemix/appid/logout";
-const ROP_LOGIN_PAGE_URL = "/ibm/bluemix/appid/rop/login";
+const CALLBACK_URL = "/ibm/cloud/appid/callback";
+const LOGOUT_URL = "/ibm/cloud/appid/logout";
+const ROP_LOGIN_PAGE_URL = "/ibm/cloud/appid/rop/login";
 const ROP_SUBMIT = "/rop/login/submit";
 const PROTECTED_ENDPOINT = "/protected";
 const CHANGE_PASSWORD_PAGE = "/ibm/cloud/appid/cloudLand/view/change/password";
 const CHANGE_DETAILS_PAGE = "/ibm/cloud/appid/cloudLand/view/change/details";
-const SIGN_UP_PAGE = "/ibm/bluemix/appid/view/sign_up";
-const FORGOT_PASSWORD_PAGE = "/ibm/bluemix/appid/view/forgot_password";
-const ACCOUNT_CONFIRMED_PAGE = "/ibm/bluemix/appid/view/account_confirmed";
-const RESET_PASSWORD_PAGE = "/ibm/bluemix/appid/view/reset_password_form";
+const SIGN_UP_PAGE = "/ibm/cloud/appid/view/sign_up";
+const FORGOT_PASSWORD_PAGE = "/ibm/cloud/appid/view/forgot_password";
+const ACCOUNT_CONFIRMED_PAGE = "/ibm/cloud/appid/view/account_confirmed";
+const RESET_PASSWORD_PAGE = "/ibm/cloud/appid/view/reset_password_form";
 const SIGN_UP_SUBMIT = "/sign_up/submit/:platform?";
 const FORGOT_PASSWORD_SUBMIT = "/forgot_password/submit/:platform?";
 const RESEND = "/resend/:templateName";
@@ -93,13 +94,11 @@ app.use(bodyParser.urlencoded({extended: false}));
 // parse application/json for mobile
 app.use(bodyParser.json());
 
-const tenantId = "TENANT_ID";
-
 // Configure passport.js to use WebAppStrategy
 passport.use(new WebAppStrategy());
 
 let selfServiceManager = new SelfServiceManager({
-	iamApiKey: "IAM_API_KEY"
+	iamApiKey: credentials.iamApiKey
 });
 
 // Configure passportjs with user serialization/deserialization. This is required
@@ -185,7 +184,7 @@ app.post(CHANGE_PASSWORD_SUBMIT, function (req, res, next) {
 				if (err) {
 					return next(err);
 				}
-				selfServiceManager.setUserNewPassword(user.identities[0].id, newPassword).then(function () {
+				selfServiceManager.setUserNewPassword(user.identities[0].id, newPassword, language).then(function () {
 					res.redirect(LANDING_PAGE_URL + languageQuery);
 				}).catch(function (err) {
 					if (err.code) {
@@ -455,7 +454,7 @@ app.get(RESET_PASSWORD_PAGE, function (req, res) {
 			//generate one time code and pass it to the reset password form,
 			// here we do that in memory but it better to use DB like Redis to do that and store it for temporary time.
 			let oneTimeCode = base64url.encode(crypto.randomBytes(24));
-			resetPasswordCodesMap.set(oneTimeCode, {uuid: uuid ,tenantId: tenantId});
+			resetPasswordCodesMap.set(oneTimeCode, {uuid: uuid});
 			logger.debug('rendering ' + resetPasswordFormEjs);
 			_render(req, res, resetPasswordFormEjs, {uuid: uuid, code: oneTimeCode}, language);
 		} else {
@@ -495,9 +494,9 @@ app.post(RESET_PASSWORD_SUBMIT, function(req, res) {
 		let codeObject = resetPasswordCodesMap.get(code);
 		if (codeObject) {
 			resetPasswordCodesMap.delete(code);
-			if (uuid === codeObject.uuid && tenantId === codeObject.tenantId) {
+			if (uuid === codeObject.uuid) {
 				//update the password and render the success page
-				selfServiceManager.setUserNewPassword(uuid, newPassword).then(function (user) {
+				selfServiceManager.setUserNewPassword(uuid, newPassword, language).then(function (user) {
 					logger.debug('successfully update user password');
 					if (platform === MOBILE_PLATFORM) {
 						res.status(200).send(user);
@@ -519,7 +518,7 @@ app.post(RESET_PASSWORD_SUBMIT, function(req, res) {
 					}
 				});
 			} else {
-				logger.error('The stored code object does not match the passed parameters');
+				logger.error('The stored code object uuid does not match the passed uuid');
 				res.status(500).send('Something went wrong');
 			}
 		} else {
