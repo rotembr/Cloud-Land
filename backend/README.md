@@ -1,7 +1,7 @@
 # Cloud-Land-sample-backend
 Web backend with custom sign-in, sign-up, forgot password, change details and chnage password screens, using App ID Cloud Directory APIs.
 
-![alt text](/Cloud-Land/backend/public/images/cloud_land_login.png)
+![Cloud Land login](/backend/public/images/cloud_land_login.png)
 
 ## Before running 
 
@@ -21,14 +21,13 @@ Web backend with custom sign-in, sign-up, forgot password, change details and ch
 ## Deploying the sample to IBM Cloud
 
 1. Download the **backend** folder.
-2. Open the _credentials.json_ file and paste your platform API key.
-3. Open the _manifest_ file and change the domain according to the region your App ID service is deployed, and your App ID service name under **services**.
-4. Open terminal at the **backend** folder and run: bx push.
-5. Open the browser and go to: _https://cloud-land-backend.ng.bluemix.net_
+2. Open the [credentials.json](/backend/credentials.json) file and paste your platform API key.
+3. Open terminal at the **backend** folder and run: _bx push_.
+4. Open the browser and go to: _https://cloud-land-backend.ng.bluemix.net_
 
 
 Note:
 If your App ID service is not deployed on US region: 
-1. Go to [manifest.yml](/Cloud-Land/backend/manifest.yml) and change the _domain_ property according to the region your App ID service is deployed.
+1. Go to [manifest.yml](/backend/manifest.yml) and change the _domain_ property according to the region your App ID service is deployed.
 2. Change the the **Custom Landing pages** accordingly.
     
