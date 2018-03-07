@@ -50,6 +50,9 @@
   "changeDetails": "Change Details",
   "changePassword": "Change Password",
 
+  "GoToLogin": "Go to login",
+  "backButton": "Back",
+
   "messages": {
     "sent": "We sent notification again",
     "confirmed": "Account already confirmed",

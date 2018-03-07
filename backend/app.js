@@ -61,6 +61,7 @@ const signUpConfirmedEjs = 'sign_up_confirmed.ejs';
 const resetPasswordFormEjs = 'reset_password_form.ejs';
 const resetPasswordExpiredEjs = 'reset_password_expired.ejs';
 const resetPasswordSuccessEjs = 'reset_password_success.ejs';
+const passwordChangedSuccessEjs = 'password_changed_success.ejs';
 const changeDetailsEjs = 'change_details.ejs';
 const changePasswordEjs = 'change_password.ejs';
 
@@ -184,8 +185,9 @@ app.post(CHANGE_PASSWORD_SUBMIT, function (req, res, next) {
 				if (err) {
 					return next(err);
 				}
-				selfServiceManager.setUserNewPassword(user.identities[0].id, newPassword, language).then(function () {
-					res.redirect(LANDING_PAGE_URL + languageQuery);
+				selfServiceManager.setUserNewPassword(user.identities[0].id, newPassword, language).then(function (userInfo) {
+					let email = userInfo.emails[0].value;
+					_render(req, res, passwordChangedSuccessEjs, {email: email}, language);
 				}).catch(function (err) {
 					if (err.code) {
 						logger.debug("error code:" + err.code + " ,bad change password input: " + err.message);

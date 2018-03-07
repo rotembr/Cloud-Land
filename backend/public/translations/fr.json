@@ -47,6 +47,9 @@
   "changeDetails": "Modifier les détails",
   "changePassword": "Changer le mot de passe",
 
+  "GoToLogin": "Aller à la connexion",
+  "backButton": "Arrière",
+
   "messages": {
     "sent": "Nous avons envoyé une nouvelle notification",
     "confirmed": "Compte déjà confirmé",
