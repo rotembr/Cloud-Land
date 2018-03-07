@@ -340,7 +340,7 @@ app.post(SIGN_UP_SUBMIT, function(req, res) {
 			if (err && err.code) {
 				logger.debug("error code:" + err.code + " ,bad sign up input: " + err.message);
 				if (platform === MOBILE_PLATFORM) {
-					res.status(err.code).send(err.message);
+					res.status(400).send(err.message);
 				} else {
 					_render(req, res, signUpEjs, req.body, language, err.code);
 				}
