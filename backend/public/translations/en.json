@@ -54,7 +54,7 @@
   "backButton": "Back",
 
   "messages": {
-    "sent": "We sent notification again",
+    "sent": "We sent the notification again",
     "confirmed": "Account already confirmed",
     "tryLater": "Try later"
   },
@@ -63,6 +63,7 @@
     "forbidden": "Please confirm your account first",
     "invalid_grant": "wrong username or password",
     "passwords_mismatch": "passwords are not the same",
+    "empty_password": "password can not be empty",
     "invalidValue":"Password must be at least 8 characters",
     "general_error": "Something went wrong, try again",
     "userNotFound": "We don't recognize this email",

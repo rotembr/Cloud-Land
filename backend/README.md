@@ -25,7 +25,7 @@ _https://cloud-land-backend.ng.bluemix.net/ibm/cloud/appid/view/reset_password_f
 
 1. Download the **backend** folder.
 2. Open the [credentials.json](/backend/credentials.json) file and paste your platform API key.
-3. Open terminal at the **backend** folder and run: _bx push_.
+3. Open terminal at the **backend** folder and run: _bx cf push_.
 4. Open the browser and go to: _https://cloud-land-backend.ng.bluemix.net_
 
 

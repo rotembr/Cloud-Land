@@ -36,7 +36,7 @@ const ROP_LOGIN_PAGE_URL = "/ibm/cloud/appid/rop/login";
 const ROP_SUBMIT = "/rop/login/submit";
 const PROTECTED_ENDPOINT = "/protected";
 const CHANGE_PASSWORD_PAGE = "/ibm/cloud/appid/cloudLand/view/change/password";
-const CHANGE_DETAILS_PAGE = "/ibm/cloud/appid/cloudLand/view/change/details";
+const CHANGE_DETAILS_PAGE = "/ibm/cloud/appid/cloudLand/view/change/details/:platform?";
 const SIGN_UP_PAGE = "/ibm/cloud/appid/view/sign_up";
 const FORGOT_PASSWORD_PAGE = "/ibm/cloud/appid/view/forgot_password";
 const ACCOUNT_CONFIRMED_PAGE = "/ibm/cloud/appid/view/account_confirmed";
@@ -45,8 +45,8 @@ const SIGN_UP_SUBMIT = "/sign_up/submit/:platform?";
 const FORGOT_PASSWORD_SUBMIT = "/forgot_password/submit/:platform?";
 const RESEND = "/resend/:templateName";
 const RESET_PASSWORD_SUBMIT = "/reset_password/submit/:platform?";
-const CHANGE_DETAILS_SUBMIT = "/change_details/submit";
-const CHANGE_PASSWORD_SUBMIT = "/change_password/submit";
+const CHANGE_DETAILS_SUBMIT = "/change_details/submit/:platform?";
+const CHANGE_PASSWORD_SUBMIT = "/change_password/submit/:platform?";
 
 const GENERAL_ERROR = "GENERAL_ERROR";
 const USER_NOT_FOUND = "userNotFound";
@@ -157,18 +157,33 @@ app.get(CHANGE_PASSWORD_PAGE, passport.authenticate(WebAppStrategy.STRATEGY_NAME
 	_render(req, res, changePasswordEjs, {email: req.user.email}, req.query.language, req.flash('errorCode'));
 });
 
-app.post(CHANGE_PASSWORD_SUBMIT, function (req, res, next) {
+app.post(CHANGE_PASSWORD_SUBMIT, passport.authenticate(WebAppStrategy.STRATEGY_NAME), function (req, res, next) {
 	let language = req.query.language || 'en';
 	let languageQuery = '?language=' + language;
 	let currentPassword = req.body['current_password'];
 	let newPassword = req.body['new_password'];
 	let confirmNewPassword = req.body['confirmed_new_password'];
-	let email = req.body.email;
+	let platform = req.params.platform;
+	let email = req.user.email;
 	
+	if (!currentPassword || !newPassword || !confirmNewPassword) {
+		logger.debug("Error: password can not be empty");
+		if (platform === MOBILE_PLATFORM) {
+			logger.debug("bad sign up input: password can not be empty");
+			res.status(400).send("password can not be empty");
+		} else {
+			_render(req, res, signUpEjs, req.body, language, 'empty_password');
+		}
+	}
 	if (!isSamePasswords(newPassword, confirmNewPassword)) {
 		logger.debug("Error: password are not the same");
-		req.flash('errorCode', 'passwords_mismatch');
-		res.redirect(CHANGE_PASSWORD_PAGE + languageQuery);
+		if (platform === MOBILE_PLATFORM) {
+			logger.debug("bad sign up input: password not the same" );
+			res.status(400).send("passwords not the same");
+		} else {
+			req.flash('errorCode', 'passwords_mismatch');
+			res.redirect(CHANGE_PASSWORD_PAGE + languageQuery);
+		}
 	} else {
 		//placing the input for ROP login
 		req.body.username = email;
@@ -186,13 +201,21 @@ app.post(CHANGE_PASSWORD_SUBMIT, function (req, res, next) {
 					return next(err);
 				}
 				selfServiceManager.setUserNewPassword(user.identities[0].id, newPassword, language).then(function (userInfo) {
-					let email = userInfo.emails[0].value;
-					_render(req, res, passwordChangedSuccessEjs, {email: email}, language);
+					if (platform === MOBILE_PLATFORM) {
+						res.status(200).send(userInfo);
+					} else {
+						let email = userInfo.emails[0].value;
+						_render(req, res, passwordChangedSuccessEjs, {email: email}, language);
+					}
 				}).catch(function (err) {
 					if (err.code) {
 						logger.debug("error code:" + err.code + " ,bad change password input: " + err.message);
-						req.flash('errorCode', err.code);
-						res.redirect(CHANGE_PASSWORD_PAGE + languageQuery);
+						if (platform === MOBILE_PLATFORM) {
+							res.status(400).send(err.message);
+						} else {
+							req.flash('errorCode', err.code);
+							res.redirect(CHANGE_PASSWORD_PAGE + languageQuery);
+						}
 					} else {
 						logger.error(err);
 						res.status(500).send('Something went wrong');
@@ -206,6 +229,8 @@ app.post(CHANGE_PASSWORD_SUBMIT, function (req, res, next) {
 app.get(CHANGE_DETAILS_PAGE, passport.authenticate(WebAppStrategy.STRATEGY_NAME), function(req, res){
 	logger.debug(CHANGE_DETAILS_PAGE);
 	let uuid = req.user.identities[0].id;
+	let platform = req.params.platform;
+	
 	selfServiceManager.getUserDetails(uuid).then(function (user) {
 		let inputs = {
 			email: user.emails[0].value,
@@ -213,7 +238,11 @@ app.get(CHANGE_DETAILS_PAGE, passport.authenticate(WebAppStrategy.STRATEGY_NAME)
 			lastName: user.name && user.name.familyName,
 			phoneNumber: user.phoneNumbers && user.phoneNumbers[0].value
 		};
-		_render(req, res, changeDetailsEjs, inputs, req.query.language);
+		if (platform === MOBILE_PLATFORM) {
+			res.status(200).send(inputs);
+		} else {
+			_render(req, res, changeDetailsEjs, inputs, req.query.language);
+		}
 	}).catch(function (err) {
 		logger.error(err);
 		res.status(500).send('Something went wrong');
@@ -221,12 +250,18 @@ app.get(CHANGE_DETAILS_PAGE, passport.authenticate(WebAppStrategy.STRATEGY_NAME)
 });
 
 app.post(CHANGE_DETAILS_SUBMIT, passport.authenticate(WebAppStrategy.STRATEGY_NAME), function(req, res) {
+	req.body.email = req.user.email;
 	let userData = _generateUserScim(req.body);
 	let language = req.query.language || 'en';
 	let languageQuery = '?language=' + language;
 	let uuid = req.user.identities[0].id;
-	selfServiceManager.updateUserDetails(uuid, userData).then(function () {
-		res.redirect(LANDING_PAGE_URL + languageQuery);
+	let platform = req.params.platform;
+	selfServiceManager.updateUserDetails(uuid, userData).then(function (userInfo) {
+		if (platform === MOBILE_PLATFORM) {
+			res.status(200).send(userInfo);
+		} else {
+			res.redirect(LANDING_PAGE_URL + languageQuery);
+		}
 	}).catch(function (err) {
 		logger.error(err);
 		res.status(500).send('Something went wrong');
@@ -316,11 +351,19 @@ app.post(SIGN_UP_SUBMIT, function(req, res) {
 	let password = req.body.password;
 	let rePassword  = req.body['confirmed_password'];
 	let platform = req.params.platform;
-	if (!isSamePasswords(password, rePassword)) {
+	if (!password || !rePassword) {
+		logger.debug("Error: password can not be empty");
+		if (platform === MOBILE_PLATFORM) {
+			logger.debug("bad sign up input: password can not be empty");
+			res.status(400).send("password can not be empty");
+		} else {
+			_render(req, res, signUpEjs, req.body, language, 'empty_password');
+		}
+	} else if (!isSamePasswords(password, rePassword)) {
 		logger.debug("Error: password are not the same");
 		if (platform === MOBILE_PLATFORM) {
 			logger.debug("bad sign up input: password not the same" );
-			res.status(400).send("password not the same");
+			res.status(400).send("passwords not the same");
 		} else {
 			_render(req, res, signUpEjs, req.body, language, 'passwords_mismatch');
 		}
@@ -484,10 +527,19 @@ app.post(RESET_PASSWORD_SUBMIT, function(req, res) {
 	let language = req.query.language || 'en';
 	let platform = req.params.platform;
 	
-	if (!isSamePasswords(newPassword, confirmNewPassword)) {
+	if (!newPassword || !confirmNewPassword) {
+		logger.debug("Error: password can not be empty");
+		if (platform === MOBILE_PLATFORM) {
+			logger.debug("bad sign up input: password can not be empty");
+			res.status(400).send("password can not be empty");
+		} else {
+			_render(req, res, resetPasswordFormEjs, {}, language, 'empty_password');
+		}
+	} else if (!isSamePasswords(newPassword, confirmNewPassword)) {
 		logger.debug('rendering reset password with error: password not the same');
 		if (platform === MOBILE_PLATFORM) {
-			res.status(400).send("passwords_mismatch");
+			logger.debug("bad sign up input: password not the same" );
+			res.status(400).send("passwords not the same");
 		} else {
 			_render(req, res, resetPasswordFormEjs, {}, language, "passwords_mismatch");
 		}
@@ -495,11 +547,11 @@ app.post(RESET_PASSWORD_SUBMIT, function(req, res) {
 		//validate the the passed code was generate by us
 		let codeObject = resetPasswordCodesMap.get(code);
 		if (codeObject) {
-			resetPasswordCodesMap.delete(code);
 			if (uuid === codeObject.uuid) {
 				//update the password and render the success page
 				selfServiceManager.setUserNewPassword(uuid, newPassword, language).then(function (user) {
 					logger.debug('successfully update user password');
+					resetPasswordCodesMap.delete(code);
 					if (platform === MOBILE_PLATFORM) {
 						res.status(200).send(user);
 					} else {

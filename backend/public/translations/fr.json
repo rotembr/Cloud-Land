@@ -60,6 +60,7 @@
     "forbidden": "Veuillez d'abord confirmer votre compte",
     "invalid_grant": "mauvais nom d'utilisateur ou mot de passe",
     "passwords_mismatch": "les mots de passe ne sont pas les mêmes",
+    "empty_password": "le mot de passe ne peut pas être vide",
     "invalidValue":"Mot de passe doit être d'au moins 8 caractères",
     "general_error": "Quelque chose s'est mal passé essaie encore",
     "userNotFound": "Nous ne reconnaissons pas cet e-mail",
