@@ -4,3 +4,5 @@ This repository contains 2 folders:
 2. Android application: The Cloud Land Android application that communicate with the Cloud Land backend.
 
 Follow the README files in each folder for running instruction.
+[Android application](/Android-application/README.md)
+[Backend](/backend/README.md)
