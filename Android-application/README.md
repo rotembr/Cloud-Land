@@ -4,7 +4,7 @@ Android application with custom sign-in, sign up, forgot password, change passwo
 ![alt text](/Android-application/app/src/main/res/drawable/cloud_land_sign_up.png)
 
 ## Before running 
-1. Follow the instruction for creating Cloud Land backend [Cloud Land backend](/Cloud-Land/backend/README.md).
+1. Follow the instruction for creating Cloud Land backend [Cloud Land backend](/backend/README.md).
 2. In the CloudLandAppIDService dashboard go to the **service credentials** tab, in the **Action** column click on **View credentials**.
 3. Copy the `tenantId` GUID number.
 4. Paste the `tenantId` to the [credentials.xml](/Android-application/app/src/main/res/values/credentials.xml)
