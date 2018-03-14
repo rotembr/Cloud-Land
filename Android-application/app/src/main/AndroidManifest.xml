@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.ibm.bluemix.appid.cloud.directory.android.sample.appid">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".MainActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".AfterLoginActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".TokenActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SignUpActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".ForgotPasswordActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity android:name=".SignUpSuccessActivity" />
+        <activity android:name=".ForgotPasswordSuccessActivity" />
+        <activity android:name=".SignUpVerifiedActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="cloudland.sign.up" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".ResetPasswordActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="cloudland.reset.password" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".ResetPasswordFormActivity" />
+        <activity android:name=".ChangeDetailsActivity" android:parentActivityName=".AfterLoginActivity" />
+        <activity android:name=".ChangePasswordActivity" android:parentActivityName=".AfterLoginActivity"/>
+    </application>
+
+</manifest>
