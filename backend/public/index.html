@@ -6,16 +6,20 @@
   <!-- Latest compiled and minified CSS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
         integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-  <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"> <!-- load fontawesome -->
+
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
   <script>
 		$(document).ready(function () {
 			$(".hideOnStartup").hide();
-			$.getJSON("/protected", function (data) {
+			$(".spinn").show();
+			$.getJSON("/protected", function (userDetails) {
 				// Already authenticated
 				$("#WhenAuthenticated").show();
 				$("#logoutButton").show();
-				$("#name").text(data.name);
-				$("#email").text(data.email);
+				$("#name").text(userDetails.firstName + " " + userDetails.lastName);
+				$("#email").text(userDetails.email);
+                $("#phoneNumber").text(userDetails.phoneNumber);
 			}).fail(function () {
 				// Not authenticated yet
 				$("#WhenNotAuthenticated").show();
@@ -26,6 +30,7 @@
 				changeDetails.href = "/ibm/cloud/appid/cloudLand/view/change/details" + languageQuery;
 				var changePassword = document.getElementById('changePassword');
 				changePassword.href = "/ibm/cloud/appid/cloudLand/view/change/password" + languageQuery;
+                $("#spinn").hide();
 			});
 		});
 
@@ -38,10 +43,14 @@
       background-attachment: fixed;
       padding-top: 80px;
     }
-
     .textStyle {
       color: white;
       text-align: center;
+    }
+    .spin {
+        display: inline-block;
+        width: 100%;
+        text-align:center;
     }
   </style>
 </head>
@@ -50,6 +59,9 @@
   <img class="center-block" id="logo" alt="logo"
        style="height: 140px; width: 140px; object-fit: contain;margin-top: 40px" src="/images/logo_cloud_land.png">
 </div>
+<span class="spin" id="spinn">
+    <i id="spinner" class="fa fa-circle-o-notch fa-spin fa-2x"></i>
+</span>
 <div id="WhenNotAuthenticated" class="hideOnStartup">
   <h3>You're not authenticated :(</h3>
 </div>
@@ -58,6 +70,7 @@
   <h3>You're authenticated :)</h3>
   <h3>Hello <span id="name"></span></h3>
   <h4>Your email is <span id="email"></span></h4>
+  <h4>Your phone number is <span id="phoneNumber"></span></h4>
   <br/><br/>
   <a class="btn btn-lg btn-primary btn-login" id="changeDetails">Change details</a>
   <a class="btn btn-lg btn-primary btn-login" id="changePassword">Change password</a>

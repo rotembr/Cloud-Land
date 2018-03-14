@@ -16,6 +16,8 @@ const session = require("express-session");
 const log4js = require("log4js");
 const passport = require("passport");
 const WebAppStrategy = require("bluemix-appid").WebAppStrategy;
+const APIStrategy = require("bluemix-appid").APIStrategy;
+
 const SelfServiceManager = require("bluemix-appid").SelfServiceManager;
 const helmet = require("helmet");
 const bodyParser = require("body-parser"); // get information from html forms
@@ -36,7 +38,9 @@ const ROP_LOGIN_PAGE_URL = "/ibm/cloud/appid/rop/login";
 const ROP_SUBMIT = "/rop/login/submit";
 const PROTECTED_ENDPOINT = "/protected";
 const CHANGE_PASSWORD_PAGE = "/ibm/cloud/appid/cloudLand/view/change/password";
-const CHANGE_DETAILS_PAGE = "/ibm/cloud/appid/cloudLand/view/change/details/:platform?";
+const CHANGE_DETAILS_PAGE = "/ibm/cloud/appid/cloudLand/view/change/details";
+const GET_USER_DETAILS = "/ibm/cloud/appid/cloudLand/mobile/get_user_details";
+
 const SIGN_UP_PAGE = "/ibm/cloud/appid/view/sign_up";
 const FORGOT_PASSWORD_PAGE = "/ibm/cloud/appid/view/forgot_password";
 const ACCOUNT_CONFIRMED_PAGE = "/ibm/cloud/appid/view/account_confirmed";
@@ -45,8 +49,12 @@ const SIGN_UP_SUBMIT = "/sign_up/submit/:platform?";
 const FORGOT_PASSWORD_SUBMIT = "/forgot_password/submit/:platform?";
 const RESEND = "/resend/:templateName";
 const RESET_PASSWORD_SUBMIT = "/reset_password/submit/:platform?";
-const CHANGE_DETAILS_SUBMIT = "/change_details/submit/:platform?";
-const CHANGE_PASSWORD_SUBMIT = "/change_password/submit/:platform?";
+
+const CHANGE_DETAILS_SUBMIT = "/change_details/submit";
+const CHANGE_DETAILS_SUBMIT_MOBILE = "/change_details/submit/mobile";
+
+const CHANGE_PASSWORD_SUBMIT = "/change_password/submit";
+const CHANGE_PASSWORD_SUBMIT_MOBILE = "/change_password/submit/mobile";
 
 const GENERAL_ERROR = "GENERAL_ERROR";
 const USER_NOT_FOUND = "userNotFound";
@@ -94,6 +102,8 @@ app.use(passport.session());
 app.use(bodyParser.urlencoded({extended: false}));
 // parse application/json for mobile
 app.use(bodyParser.json());
+
+passport.use(new APIStrategy());
 
 // Configure passport.js to use WebAppStrategy
 passport.use(new WebAppStrategy());
@@ -147,9 +157,21 @@ app.get(CALLBACK_URL, passport.authenticate(WebAppStrategy.STRATEGY_NAME));
 
 // Protected area. If current user is not authenticated - redirect to the login widget will be returned.
 // In case user is authenticated - a page with current user information will be returned.
-app.get(PROTECTED_ENDPOINT, passport.authenticate(WebAppStrategy.STRATEGY_NAME), function(req, res){
+app.get(PROTECTED_ENDPOINT, passport.authenticate(WebAppStrategy.STRATEGY_NAME), function(req, res) {
 	logger.debug(PROTECTED_ENDPOINT);
-	res.json(req.user);
+	let uuid = req.user.identities[0].id;
+	selfServiceManager.getUserDetails(uuid).then(function (user) {
+		let userDetails = {
+			email: user.emails[0].value,
+			firstName: user.name && user.name.givenName,
+			lastName: user.name && user.name.familyName,
+			phoneNumber: user.phoneNumbers && user.phoneNumbers[0].value
+		};
+		res.json(userDetails);
+	}).catch(function (err) {
+		logger.error(err);
+		res.status(500).send('Something went wrong');
+	});
 });
 
 app.get(CHANGE_PASSWORD_PAGE, passport.authenticate(WebAppStrategy.STRATEGY_NAME), function(req, res){
@@ -157,13 +179,22 @@ app.get(CHANGE_PASSWORD_PAGE, passport.authenticate(WebAppStrategy.STRATEGY_NAME
 	_render(req, res, changePasswordEjs, {email: req.user.email}, req.query.language, req.flash('errorCode'));
 });
 
+app.post(CHANGE_PASSWORD_SUBMIT_MOBILE, passport.authenticate(APIStrategy.STRATEGY_NAME, {session: false}), function (req, res, next) {
+	logger.debug(CHANGE_PASSWORD_SUBMIT_MOBILE);
+	_changePassword(req, res, next, MOBILE_PLATFORM);
+});
+
 app.post(CHANGE_PASSWORD_SUBMIT, passport.authenticate(WebAppStrategy.STRATEGY_NAME), function (req, res, next) {
+	logger.debug(CHANGE_PASSWORD_SUBMIT);
+	_changePassword(req, res, next);
+});
+
+function _changePassword(req, res, next, platform) {
 	let language = req.query.language || 'en';
 	let languageQuery = '?language=' + language;
 	let currentPassword = req.body['current_password'];
 	let newPassword = req.body['new_password'];
 	let confirmNewPassword = req.body['confirmed_new_password'];
-	let platform = req.params.platform;
 	let email = req.user.email;
 	
 	if (!currentPassword || !newPassword || !confirmNewPassword) {
@@ -193,8 +224,12 @@ app.post(CHANGE_PASSWORD_SUBMIT, passport.authenticate(WebAppStrategy.STRATEGY_N
 				return next(err);
 			}
 			if (!user) {
-				req.flash('errorCode', 'incorrect_password');
-				return res.redirect(CHANGE_PASSWORD_PAGE + languageQuery);
+				if (platform === MOBILE_PLATFORM) {
+					return res.status(400).send("Incorrect current password");
+				} else {
+					req.flash('errorCode', 'incorrect_password');
+					return res.redirect(CHANGE_PASSWORD_PAGE + languageQuery);
+				}
 			}
 			req.logIn(user, function (err) {
 				if (err) {
@@ -224,13 +259,21 @@ app.post(CHANGE_PASSWORD_SUBMIT, passport.authenticate(WebAppStrategy.STRATEGY_N
 			});
 		})(req, res, next);
 	}
-});
+}
+
+app.get(GET_USER_DETAILS, passport.authenticate(APIStrategy.STRATEGY_NAME, {session: false}), function(req, res) {
+		logger.debug(CHANGE_DETAILS_PAGE);
+		_getDetails(req, res, MOBILE_PLATFORM);
+	}
+);
 
 app.get(CHANGE_DETAILS_PAGE, passport.authenticate(WebAppStrategy.STRATEGY_NAME), function(req, res){
 	logger.debug(CHANGE_DETAILS_PAGE);
+	_getDetails(req, res);
+});
+
+function _getDetails(req, res, platform) {
 	let uuid = req.user.identities[0].id;
-	let platform = req.params.platform;
-	
 	selfServiceManager.getUserDetails(uuid).then(function (user) {
 		let inputs = {
 			email: user.emails[0].value,
@@ -247,15 +290,27 @@ app.get(CHANGE_DETAILS_PAGE, passport.authenticate(WebAppStrategy.STRATEGY_NAME)
 		logger.error(err);
 		res.status(500).send('Something went wrong');
 	});
+}
+
+app.post(CHANGE_DETAILS_SUBMIT_MOBILE, passport.authenticate(APIStrategy.STRATEGY_NAME, {session: false}), function (req, res) {
+	logger.debug(CHANGE_DETAILS_SUBMIT_MOBILE);
+	_changeDetails(req, res, MOBILE_PLATFORM);
 });
 
 app.post(CHANGE_DETAILS_SUBMIT, passport.authenticate(WebAppStrategy.STRATEGY_NAME), function(req, res) {
+	logger.debug(CHANGE_DETAILS_SUBMIT);
+	_changeDetails(req, res);
+});
+
+function _changeDetails(req, res, platform) {
 	req.body.email = req.user.email;
+	if (req.body.password) { //make sure password will not be changed
+		delete req.body.password;
+	}
 	let userData = _generateUserScim(req.body);
 	let language = req.query.language || 'en';
 	let languageQuery = '?language=' + language;
 	let uuid = req.user.identities[0].id;
-	let platform = req.params.platform;
 	selfServiceManager.updateUserDetails(uuid, userData).then(function (userInfo) {
 		if (platform === MOBILE_PLATFORM) {
 			res.status(200).send(userInfo);
@@ -266,7 +321,7 @@ app.post(CHANGE_DETAILS_SUBMIT, passport.authenticate(WebAppStrategy.STRATEGY_NA
 		logger.error(err);
 		res.status(500).send('Something went wrong');
 	});
-});
+}
 
 // Logout endpoint. Clears authentication information from session
 app.get(LOGOUT_URL, function(req, res){
