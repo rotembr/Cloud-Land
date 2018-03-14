@@ -1,6 +1,7 @@
 # Cloud-Land-Android-application
 Android application with custom sign-in, sign up, forgot password, change password and change details screens, support by Cloud Land backend.
 
+![alt text](/Android-application/app/src/main/res/drawable/cloud_land_login.png)
 ![alt text](/Android-application/app/src/main/res/drawable/cloud_land_sign_up.png)
 
 ## Before running 
