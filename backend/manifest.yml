@@ -2,7 +2,7 @@ applications:
 - path: .
   memory: 256M
   instances: 1
-  domain: ng.bluemix.net
+  domain: mybluemix.net
   name: Cloud Land Backend
   host: Cloud-Land-Backend
   disk_quota: 1024M

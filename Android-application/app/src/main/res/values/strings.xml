@@ -36,5 +36,13 @@
     <string name="hanvnt_got_email">If you haven\'t got it click resend</string>
     <string name="current_password">Current Password</string>
     <string name="action_save_changes">Save Changes</string>
-
+    <string name="asset_statements">
+    [{
+        \"relation\": [\"delegate_permission/common.handle_all_urls\"],
+        \"target\": {
+        \"namespace\": \"web\",
+        \"site\": \"https://cloud-land-backend.mybluemix.net\"
+        }
+    }]
+    </string>
 </resources>

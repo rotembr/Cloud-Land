@@ -1,9 +1,11 @@
 <!doctype html>
 <html>
 <head>
-    <title>Node Authentication</title>
+    <title>Sign up confirmed</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> <!-- load bootstrap css -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"> <!-- load fontawesome -->
+    <link rel="manifest" href="/manifest.json">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.js"></script>
     <style>
@@ -79,8 +81,8 @@
 
     </style>
 </head>
-<body background="../appidExample.png">
-<div class="container">
+<body>
+<div id="containerDiv" class="container" style="display: none">
     <div class="row row-sm-offset-3">
         <div class="col-xs-12 col-sm-6">
             <div id="imgDiv">
@@ -118,6 +120,23 @@
 
 </div>
 <script>
+
+	window.addEventListener("load", e => {
+		if (navigator.getInstalledRelatedApps) {
+			navigator.getInstalledRelatedApps().then(apps => {
+				if (apps.length > 0) {
+					//show on android application
+					window.location.href = "<%= mobileRedirectUri %>";
+				} else {
+                  //show on web
+                  document.getElementById("containerDiv").setAttribute('style', 'display:visible');
+                }
+			});
+		} else {
+          //show on web
+          document.getElementById("containerDiv").setAttribute('style', 'display:visible');
+        }
+	});
     if (!"<%= errorStatusCode %>") {
 	    document.getElementById("pageHeader").innerHTML = "<%= confirmHeader1 %>";
     } else if ("<%= errorStatusCode %>" === "NOT_FOUND") {

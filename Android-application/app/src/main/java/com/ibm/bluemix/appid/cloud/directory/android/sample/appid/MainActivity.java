@@ -48,7 +48,8 @@ public class MainActivity extends AppCompatActivity {
 
     public final static int SIGN_UP_SUCCESS = 1;
     public final static int FORGOT_PASSWORD_SUCCESS = 2;
-    public final static String CLOUD_LAND_BACKEND_URL = "Your-Cloud-Land-backend-url";
+
+    public final static String CLOUD_LAND_BACKEND_URL = "https://cloud-land-backend.mybluemix.net";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

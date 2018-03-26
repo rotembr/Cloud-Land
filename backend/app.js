@@ -390,15 +390,18 @@ function _render(req, res, ejs, inputs, language = 'en', errorCode) {
 			if (inputs.errorStatusCode) {
 				mobileRedirectUri += encodeURIComponent('&errorStatusCode=' + inputs.errorStatusCode);
 				mobileRedirectUri += encodeURIComponent('&errorDescription=' + inputs.errorDescription);
-				return res.redirect(mobileRedirectUri);
-			} else {
-				return res.redirect(mobileRedirectUri);
 			}
+			logger.debug('mobileRedirectUri: ' + mobileRedirectUri);
+			languageStrings.mobileRedirectUri = mobileRedirectUri;
 		}
 	}
 	
 	res.render(ejs, languageStrings);
 }
+
+app.get('/manifest.json', function (req, res) {
+	res.sendFile(__dirname + '/manifest.json');
+});
 
 app.post(SIGN_UP_SUBMIT, function(req, res) {
 	let userData = _generateUserScim(req.body);

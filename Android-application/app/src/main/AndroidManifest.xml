@@ -9,6 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data android:name="asset_statements" android:resource="@string/asset_statements" />
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -33,7 +34,8 @@
             android:parentActivityName=".MainActivity" />
         <activity android:name=".SignUpSuccessActivity" />
         <activity android:name=".ForgotPasswordSuccessActivity" />
-        <activity android:name=".SignUpVerifiedActivity">
+        <activity android:name=".SignUpVerifiedActivity"
+            android:parentActivityName=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -43,7 +45,8 @@
                 <data android:scheme="cloudland.sign.up" />
             </intent-filter>
         </activity>
-        <activity android:name=".ResetPasswordActivity">
+        <activity android:name=".ResetPasswordActivity"
+            android:parentActivityName=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
