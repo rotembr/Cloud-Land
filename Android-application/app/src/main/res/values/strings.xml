@@ -1,0 +1,48 @@
+<!--
+  ~ Copyright 2016, 2017 IBM Corp.
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<resources>
+    <string name="app_name">appid</string>
+
+    <string name="bluemix_land">Bluemix Land</string>
+    <string name="greet">Hi</string>
+    <string name="login">Login</string>
+    <string name="notice">Note:</string>
+    <string name="view_token">View Token</string>
+    <string name="choice">What would you like to eat?</string>
+    <string name="profile_icon">profile icon</string>
+    <string name="description">Description</string>
+    <string name="selected_icon">selected icon</string>
+
+    <string name="sign_up"><u>sign up</u></string>
+    <string name="ForgotPassword"><u>Forgot Password</u></string>
+    <string name="account_details">Account Details</string>
+    <string name="change_password">Change Password</string>
+    <string name="log_out">Log out</string>
+    <string name="don_t_have_an_account">Don\'t have an account?</string>
+
+    <string name="hello">Hello</string>
+    <string name="check_your_email_inbox">Check your email inbox</string>
+    <string name="resend_email">resend email</string>
+    <string name="hanvnt_got_email">If you haven\'t got it click resend</string>
+    <string name="current_password">Current Password</string>
+    <string name="action_save_changes">Save Changes</string>
+    <string name="asset_statements">
+    [{
+        \"relation\": [\"delegate_permission/common.handle_all_urls\"],
+        \"target\": {
+        \"namespace\": \"web\",
+        \"site\": \"https://cloud-land-backend.mybluemix.net\"
+        }
+    }]
+    </string>
+</resources>
