@@ -1,6 +1,6 @@
 # Cloud-Land-sample-backend
 
-Web backend with custom sign-in, sign-up, forgot password, change details and chnage password screens, using App ID Cloud Directory APIs.
+Web backend with custom sign-in, sign-up, forgot password, change details and change password screens, using App ID Cloud Directory APIs.
 
 ![Cloud-Land-login-screen](/backend/public/images/cloud_land_login_screen.png)
 
