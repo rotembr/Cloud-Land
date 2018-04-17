@@ -43,8 +43,8 @@ const GET_USER_DETAILS = "/ibm/cloud/appid/cloudLand/mobile/get_user_details";
 
 const SIGN_UP_PAGE = "/ibm/cloud/appid/view/sign_up";
 const FORGOT_PASSWORD_PAGE = "/ibm/cloud/appid/view/forgot_password";
-const ACCOUNT_CONFIRMED_PAGE = "/ibm/cloud/appid/view/account_confirmed";
-const RESET_PASSWORD_PAGE = "/ibm/cloud/appid/view/reset_password_form";
+const ON_USER_VERIFIED = "/ibm/cloud/appid/view/account_confirmed";
+const ON_RESET_PASSWORD = "/ibm/cloud/appid/view/reset_password_form";
 const SIGN_UP_SUBMIT = "/sign_up/submit/:platform?";
 const FORGOT_PASSWORD_SUBMIT = "/forgot_password/submit/:platform?";
 const RESEND = "/resend/:templateName";
@@ -375,8 +375,8 @@ function _render(req, res, ejs, inputs, language = 'en', errorCode) {
 	if (ejs === signUpConfirmedEjs || ejs === resetPasswordFormEjs || ejs === resetPasswordExpiredEjs) {
 		let userAgent = req.get('User-Agent');
 		let isRunningOnMobileWeb = userAgent.indexOf('Mobile') > -1;
+		let mobileRedirectUri;
 		if (isRunningOnMobileWeb) {
-			let mobileRedirectUri;
 			if (ejs === signUpConfirmedEjs) {
 				mobileRedirectUri = encodeURI(mobileSignUpConfirmation);
 			} else {
@@ -392,8 +392,8 @@ function _render(req, res, ejs, inputs, language = 'en', errorCode) {
 				mobileRedirectUri += encodeURIComponent('&errorDescription=' + inputs.errorDescription);
 			}
 			logger.debug('mobileRedirectUri: ' + mobileRedirectUri);
-			languageStrings.mobileRedirectUri = mobileRedirectUri;
 		}
+		languageStrings.mobileRedirectUri = mobileRedirectUri;
 	}
 	
 	res.render(ejs, languageStrings);
@@ -512,7 +512,7 @@ app.post(RESEND, function(req, res) {
 	});
 });
 
-app.get(ACCOUNT_CONFIRMED_PAGE, function (req, res) {
+app.get(ON_USER_VERIFIED, function (req, res) {
 	let context = req.query.context;
 	let language = req.query.language;
 	selfServiceManager.getSignUpConfirmationResult(context).then(function (result) {
@@ -548,7 +548,7 @@ app.get(ACCOUNT_CONFIRMED_PAGE, function (req, res) {
 	});
 });
 
-app.get(RESET_PASSWORD_PAGE, function (req, res) {
+app.get(ON_RESET_PASSWORD, function (req, res) {
 	let context = req.query.context;
 	let language = req.query.language;
 	selfServiceManager.getForgotPasswordConfirmationResult(context).then(function (result) {
