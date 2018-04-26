@@ -6,12 +6,6 @@ Web backend with custom sign-in, sign-up, forgot password, change details and ch
 
 ## Before running 
 
-### Create Platform API key
-
-1. In IBM Cloud go to **Manage**->**Security**->**Platform API Keys**
-2. Click on create, set a name and description of the API key and click create. 
-3. Take a note of the created API key.
-
 ### Create and configure App ID service
 
 1. Create App ID service from the [IBM Cloud services catalog](https://console.bluemix.net/catalog/services/app-id?taxonomyNavigation=apps) and name it _CloudLandAppIDService_.
@@ -24,9 +18,8 @@ _https://cloud-land-backend.mybluemix.net/ibm/cloud/appid/view/reset_password_fo
 ## Deploying the sample to IBM Cloud
 
 1. Download the **backend** folder.
-2. Open the [credentials.json](/backend/credentials.json) file and paste your platform API key.
-3. Open terminal at the **backend** folder and run: _bx cf push_.
-4. Open the browser and go to: _https://cloud-land-backend.mybluemix.net_
+2. Open terminal at the **backend** folder and run: _bx cf push_.
+3. Open the browser and go to: _https://cloud-land-backend.mybluemix.net_
 
 
 Note:

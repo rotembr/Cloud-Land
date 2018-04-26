@@ -29,7 +29,6 @@ const cfenv = require('cfenv');
 const logger = log4js.getLogger("cloud-directory-app-sample-server");
 const base64url = require("base64url");
 const crypto = require("crypto");
-const credentials = require("./credentials.json");
 
 const LANDING_PAGE_URL = "/index.html";
 const CALLBACK_URL = "/ibm/cloud/appid/callback";
@@ -108,9 +107,7 @@ passport.use(new APIStrategy());
 // Configure passport.js to use WebAppStrategy
 passport.use(new WebAppStrategy());
 
-let selfServiceManager = new SelfServiceManager({
-	iamApiKey: credentials.iamApiKey
-});
+let selfServiceManager = new SelfServiceManager();
 
 // Configure passport.js with user serialization/deserialization. This is required
 // for authenticated session persistence accross HTTP requests. See passportjs docs
