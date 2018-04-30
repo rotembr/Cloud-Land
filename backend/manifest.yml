@@ -4,7 +4,7 @@ applications:
   instances: 1
   domain: mybluemix.net
   name: Cloud Land Backend
-  host: Cloud-Land-Backend
+  host: Cloud-Land-Backend-< YOUR NAME >
   disk_quota: 1024M
   services:
-  - CloudLandAppIDService
+  - CloudLandAppIDService-alias
