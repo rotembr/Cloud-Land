@@ -15,6 +15,7 @@ Web backend with custom sign-in, sign-up, forgot password, change details and ch
 _https://Your-Cloud-Land-Backend.mybluemix.net/ibm/cloud/appid/view/account_confirmed_
 
 after replacing "Your-Cloud-Land-Backend" with your backend host name.
+
 4. Set the _URL for your custom reset password page_ to
 
 _https://Your-Cloud-Land-Backend.mybluemix.net/ibm/cloud/appid/view/reset_password_form_
@@ -28,8 +29,11 @@ after replacing "Your-Cloud-Land-Backend" with your backend host name.
 ```
 bx resource service-alias-create "_CloudLandAppIDService_" --instance-name "_CloudLandAppIDService_" -s "YOUR SPACE" 
 ```
-3. Go to [manifest.yml](/backend/manifest.yml) and replace the Your-Cloud-Land-Backend in the _host_ property with your own host name (same name that was picked in step 3).
-4. Open terminal at the **backend** folder and run: _bx app push_.
+3. Go to [manifest.yml](/backend/manifest.yml) and replace the Your-Cloud-Land-Backend in the _host_ property with your own host name (same name that was picked in step 3 above).
+4. Open terminal at the **backend** folder and run: 
+```
+bx app push 
+```
 5. Open the browser and go to: 
 _https://Your-Cloud-Land-Backend.mybluemix.net_ 
 after replacing "Your-Cloud-Land-Backend" with your backend host name
