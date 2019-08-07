@@ -364,7 +364,7 @@ function isSamePasswords(password1, password2) {
 
 function _render(req, res, ejs, inputs, language = 'en', errorCode) {
 	let languageStrings = require("./public/translations/" + language);
-	let errorMsg = errorCode ? (languageStrings.errors[errorCode] || languageStrings.errors[GENERAL_ERROR]): '';
+	let errorMsg = errorCode ? (languageStrings.errors[errorCode] || errorCode): '';
 	Object.assign(languageStrings, {message: errorMsg});
 	Object.assign(languageStrings, inputs);
 	
@@ -614,12 +614,12 @@ app.post(RESET_PASSWORD_SUBMIT, function(req, res) {
 						_render(req, res, resetPasswordSuccessEjs, {email: email}, language);
 					}
 				}).catch(function (err) {
-					if (err.code) {
-						logger.debug("error code:" + err.code + " ,bad reset password input: " + err.message);
+					if (err.statusCode === 400) {
+						logger.debug("error code:" + err.statusCode + " ,bad reset password input: " + err.message);
 						if (platform === MOBILE_PLATFORM) {
-							res.status(400).send(err.code);
+							res.status(400).send(err.statusCode);
 						} else {
-							_render(req, res, resetPasswordFormEjs, {}, language, err.code);
+							_render(req, res, resetPasswordFormEjs, {}, language, err.message);
 						}
 					} else {
 						logger.error('Error while trying to save user new password: ' + err.message);
